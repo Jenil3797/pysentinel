@@ -23,3 +23,19 @@ def calculate_sha256(filepath):
     except (FileNotFoundError, PermissionError) as e:
         logging.error(f"Could not read {filepath}: {e}")
         return None
+
+def create_baseline(target_directory, baseline_path):
+    """Scans directory and saves file hashes to a JSON file."""
+    baseline = {}
+    for root, dirs, files in os.walk(target_directory):
+        for name in files:
+            filepath = os.path.join(root, name)
+            file_hash = calculate_sha256(filepath)
+            if file_hash:
+                baseline[filepath] = file_hash
+    
+    with open(baseline_path, 'w') as f:
+        json.dump(baseline, f, indent=4)
+    
+    print(f"[+] Baseline created successfully in {baseline_path}")
+    logging.info(f"Baseline created for {target_directory}")
