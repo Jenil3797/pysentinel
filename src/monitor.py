@@ -86,12 +86,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.mode == "build":
-        create_baseline(args.dir, args.baseline)
-    elif args.mode == "monitor":
-        print(f"[*] Monitoring started on {args.dir}...")
-        monitor_integrity(args.dir, args.baseline)
-
-if args.mode == "build":
         if not os.path.isdir(args.dir):
             print("[-] Error: Target must be a directory, not a file.")
             sys.exit(1)
