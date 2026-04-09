@@ -72,3 +72,21 @@ def monitor_integrity(target_directory, baseline_path):
         if filepath not in baseline:
             print(f"[!] ALERT: New File Created - {filepath}")
             logging.warning(f"New File Created: {filepath}")
+
+import sys
+
+if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="PySentinel: File Integrity Monitor")
+    parser.add_argument("mode", choices=["build", "monitor"], help="Mode to run the tool")
+    parser.add_argument("-d", "--dir", required=True, help="Target directory to monitor")
+    parser.add_argument("-b", "--baseline", default="data/baseline.json", help="Path to baseline file")
+
+    args = parser.parse_args()
+
+    if args.mode == "build":
+        create_baseline(args.dir, args.baseline)
+    elif args.mode == "monitor":
+        print(f"[*] Monitoring started on {args.dir}...")
+        monitor_integrity(args.dir, args.baseline)
