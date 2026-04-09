@@ -39,3 +39,36 @@ def create_baseline(target_directory, baseline_path):
     
     print(f"[+] Baseline created successfully in {baseline_path}")
     logging.info(f"Baseline created for {target_directory}")
+
+def monitor_integrity(target_directory, baseline_path):
+    """Compares current files against the baseline."""
+    if not os.path.exists(baseline_path):
+        print("[-] Error: Baseline file not found. Create one first.")
+        return
+
+    with open(baseline_path, 'r') as f:
+        baseline = json.load(f)
+
+    current_files = {}
+    for root, dirs, files in os.walk(target_directory):
+        for name in files:
+            filepath = os.path.join(root, name)
+            file_hash = calculate_sha256(filepath)
+            if file_hash:
+                current_files[filepath] = file_hash
+
+    # Compare logic
+    # 1. Check for modified or deleted files
+    for filepath, original_hash in baseline.items():
+        if filepath not in current_files:
+            print(f"[!] ALERT: File Deleted - {filepath}")
+            logging.warning(f"File Deleted: {filepath}")
+        elif current_files[filepath] != original_hash:
+            print(f"[!] ALERT: File Modified - {filepath}")
+            logging.warning(f"File Modified: {filepath}")
+
+    # 2. Check for new files
+    for filepath in current_files:
+        if filepath not in baseline:
+            print(f"[!] ALERT: New File Created - {filepath}")
+            logging.warning(f"New File Created: {filepath}")
